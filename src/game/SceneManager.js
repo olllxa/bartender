@@ -403,7 +403,6 @@ export class SceneManager {
       { x: -3.0, z: -3.46 },
       { x: 3.0, z: -3.46 },
       { x: -W + 0.04, z: -1.0, ry: Math.PI / 2 },
-      { x: W - 0.04, z: -1.0, ry: -Math.PI / 2 },
     ];
 
     artPositions.forEach((ap, i) => {
@@ -424,32 +423,25 @@ export class SceneManager {
       this.scene.add(art);
     });
 
-    const pendantMat = new THREE.MeshStandardMaterial({
-      color: 0xcc8844, roughness: 0.6, metalness: 0.2,
-      transparent: true, opacity: 0.6,
+    const paintingLoader = new GLTFLoader();
+    paintingLoader.load('painting_by_zdzislaw_beksinski_3.glb', (gltf) => {
+      const model = gltf.scene;
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const targetH = 1.1;
+      const s = targetH / size.y;
+      model.scale.set(s, s, s);
+      model.position.set(W - 0.04, 2.0, -1.0);
+      model.rotation.y = -Math.PI / 2;
+      model.traverse((child) => {
+        if (child.isMesh && child.material.map) {
+          child.material.emissive = new THREE.Color(0xffffff);
+          child.material.emissiveIntensity = 0.5;
+          child.material.emissiveMap = child.material.map;
+        }
+      });
+      this.scene.add(model);
     });
-    const shadeMat = new THREE.MeshStandardMaterial({
-      color: 0x332211, roughness: 0.9, metalness: 0.0,
-    });
-
-    for (const [x, z] of [[0, 1.5], [0, -1.0], [2.0, 3.2]]) {
-      const shade = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.26, 0.12, 10), shadeMat);
-      shade.position.set(x, 2.9, z);
-      this.scene.add(shade);
-
-      const glow = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), pendantMat);
-      glow.position.set(x, 2.83, z);
-      this.scene.add(glow);
-    }
-
-    const paintingTex = new THREE.TextureLoader().load('painting_texture.jpg');
-    const paintingMat = new THREE.MeshStandardMaterial({
-      map: paintingTex, roughness: 0.7, metalness: 0.0,
-    });
-    const paintingMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.55), paintingMat);
-    paintingMesh.position.set(W - 0.04, 2.0, 2.0);
-    paintingMesh.rotation.y = -Math.PI / 2;
-    this.scene.add(paintingMesh);
 
     const tvBodyMat = new THREE.MeshStandardMaterial({
       color: 0x111111, roughness: 0.3, metalness: 0.3,
