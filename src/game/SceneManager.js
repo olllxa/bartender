@@ -208,27 +208,7 @@ export class SceneManager {
       this.scene.add(fwCrownSection);
     }
 
-    const doorH = 2.3;
-    const doorFrameMat = new THREE.MeshStandardMaterial({
-      color: 0x5a3a24, roughness: 0.7, metalness: 0.05,
-    });
-    const doorPosY = doorH / 2;
-    for (const x of [-doorHalf, doorHalf]) {
-      const post = new THREE.Mesh(new THREE.BoxGeometry(0.08, doorH, 0.08), doorFrameMat);
-      post.position.set(x, doorPosY, 4.45);
-      this.scene.add(post);
-    }
-    const topBeam = new THREE.Mesh(new THREE.BoxGeometry(doorHalf * 2, 0.08, 0.08), doorFrameMat);
-    topBeam.position.set(0, doorH, 4.45);
-    this.scene.add(topBeam);
 
-    const doorMat = new THREE.MeshStandardMaterial({
-      color: 0x3a2214, roughness: 0.8, metalness: 0.05,
-    });
-    const door = new THREE.Mesh(new THREE.BoxGeometry(doorHalf * 2 - 0.04, doorH - 0.04, 0.04), doorMat);
-    door.position.set(0.2, doorPosY, 4.48);
-    door.rotation.y = -0.3;
-    this.scene.add(door);
   }
 
   setupWindows() {
@@ -461,6 +441,15 @@ export class SceneManager {
       glow.position.set(x, 2.83, z);
       this.scene.add(glow);
     }
+
+    const paintingTex = new THREE.TextureLoader().load('painting_texture.jpg');
+    const paintingMat = new THREE.MeshStandardMaterial({
+      map: paintingTex, roughness: 0.7, metalness: 0.0,
+    });
+    const paintingMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.55), paintingMat);
+    paintingMesh.position.set(W - 0.04, 2.0, 2.0);
+    paintingMesh.rotation.y = -Math.PI / 2;
+    this.scene.add(paintingMesh);
 
     const tvBodyMat = new THREE.MeshStandardMaterial({
       color: 0x111111, roughness: 0.3, metalness: 0.3,
