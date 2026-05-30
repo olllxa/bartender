@@ -65,7 +65,7 @@ export class BottleShelf {
       labelDiv.className = 'bottle-label';
       labelDiv.textContent = ingredient.name;
       const label = new CSS2DObject(labelDiv);
-      label.position.set(0, 0.6, 0);
+      label.position.set(0, -0.25, 0);
       bottle.group.add(label);
       this.labels[id] = label;
     });
