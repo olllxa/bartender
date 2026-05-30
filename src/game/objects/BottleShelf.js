@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { INGREDIENTS } from '../../data/ingredients.js';
 
 export class BottleShelf {
@@ -56,17 +57,75 @@ export class BottleShelf {
 
     ingredientIds.forEach((id, i) => {
       const ingredient = INGREDIENTS[id];
-      const bottle = this.createBottle(ingredient.color);
-      bottle.group.position.copy(positions[i]);
-      this.group.add(bottle.group);
-      this.bottles[id] = bottle;
+      const pos = positions[i];
+
+      const glbBottles = {
+        whiskey: { file: 'jack_daniels_whiskey_no.7_bottle.glb', scale: 0.56 },
+        vodka: { file: 'absolut_vodka_1l_bottle.glb', scale: 0.56 },
+        tequila: { file: 'tequila_don_pablo.glb', scale: 0.28, rotateY: Math.PI / 2 },
+        white_rum: { file: 'bottlea.glb', scale: 0.56 },
+      };
+
+      if (glbBottles[id]) {
+        const cfg = glbBottles[id];
+        const group = new THREE.Group();
+        group.position.copy(pos);
+        this.group.add(group);
+
+        const loader = new GLTFLoader();
+        loader.load(cfg.file, (gltf) => {
+          const model = gltf.scene;
+          let box = new THREE.Box3().setFromObject(model);
+          const size = box.getSize(new THREE.Vector3());
+          const s = cfg.scale / size.y;
+          model.scale.set(s, s, s);
+          if (cfg.rotateY) model.rotation.y = cfg.rotateY;
+          box = new THREE.Box3().setFromObject(model);
+          model.position.y = -box.min.y;
+          model.traverse((child) => {
+            if (child.isMesh && child.material.map) {
+              child.material.emissive = new THREE.Color(0xffffff);
+              child.material.emissiveIntensity = 0.3;
+              child.material.emissiveMap = child.material.map;
+            }
+          });
+          group.add(model);
+        });
+
+        const glowMat = new THREE.MeshStandardMaterial({
+          color: 0xffffff, roughness: 0.1, metalness: 0.0,
+          transparent: true, opacity: 0.0,
+        });
+        const glowRing = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.32, 10), glowMat);
+        glowRing.position.y = 0.14;
+        group.add(glowRing);
+
+        const hitboxMat = new THREE.MeshStandardMaterial({
+          color: 0xffffff, roughness: 0.5, metalness: 0.0,
+          transparent: true, opacity: 0.0,
+        });
+        const hitbox = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.18, 0.30, 6), hitboxMat);
+        hitbox.position.y = 0.14;
+        group.add(hitbox);
+
+        this.bottles[id] = {
+          group,
+          body: hitbox,
+          glowMat,
+        };
+      } else {
+        const bottle = this.createBottle(ingredient.color);
+        bottle.group.position.copy(pos);
+        this.group.add(bottle.group);
+        this.bottles[id] = bottle;
+      }
 
       const labelDiv = document.createElement('div');
       labelDiv.className = 'bottle-label';
       labelDiv.textContent = ingredient.name;
       const label = new CSS2DObject(labelDiv);
       label.position.set(0, 0.55, 0);
-      bottle.group.add(label);
+      this.bottles[id].group.add(label);
       this.labels[id] = label;
     });
   }
