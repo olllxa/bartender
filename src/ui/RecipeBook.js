@@ -140,8 +140,8 @@ export class RecipeBook {
     this.previewScene.background = null;
 
     this.previewCamera = new THREE.PerspectiveCamera(35, 160 / 240, 0.1, 10);
-    this.previewCamera.position.set(0, 0.15, 0.65);
-    this.previewCamera.lookAt(0, 0.06, 0);
+    this.previewCamera.position.set(0, 0.08, 0.65);
+    this.previewCamera.lookAt(0, 0.025, 0);
 
     const ambient = new THREE.AmbientLight(0x8899aa, 0.6);
     this.previewScene.add(ambient);

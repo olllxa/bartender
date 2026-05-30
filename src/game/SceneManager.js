@@ -262,13 +262,14 @@ export class SceneManager {
     const bucketMat = new THREE.MeshStandardMaterial({
       color: 0x8a8a8a, roughness: 0.4, metalness: 0.6,
     });
-    const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.08, 0.12, 12), bucketMat);
-    bucket.position.set(pos.x, 0.78 + 0.06, pos.z);
+    const r = 0.14, h = 0.18;
+    const bucket = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.8, h, 12), bucketMat);
+    bucket.position.set(pos.x, 0.78 + h / 2, pos.z);
     bucket.castShadow = true;
     this.scene.add(bucket);
 
-    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.015, 6, 12), bucketMat);
-    rim.position.set(pos.x, 0.78 + 0.125, pos.z);
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(r, 0.02, 6, 12), bucketMat);
+    rim.position.set(pos.x, 0.78 + h + 0.01, pos.z);
     this.scene.add(rim);
 
     const fillMat = new THREE.MeshStandardMaterial({
@@ -276,23 +277,34 @@ export class SceneManager {
     });
 
     if (fillType === 'ice') {
-      for (let i = 0; i < 5; i++) {
-        const cube = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.03), fillMat);
+      for (let i = 0; i < 10; i++) {
+        const s = 0.025 + Math.random() * 0.025;
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(s, s, s), fillMat);
         cube.position.set(
-          pos.x + (Math.random() - 0.5) * 0.12,
-          0.78 + 0.06 + Math.random() * 0.04,
-          pos.z + (Math.random() - 0.5) * 0.12
+          pos.x + (Math.random() - 0.5) * r * 1.2,
+          0.78 + h * 0.3 + Math.random() * h * 0.5,
+          pos.z + (Math.random() - 0.5) * r * 1.2
         );
+        cube.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
         this.scene.add(cube);
       }
-    } else {
-      const count = fillType === 'lemon' ? 3 : 4;
-      for (let i = 0; i < count; i++) {
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.025, 6, 6), fillMat);
+    } else if (fillType === 'lemon') {
+      for (let i = 0; i < 6; i++) {
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), fillMat);
         sphere.position.set(
-          pos.x + (Math.random() - 0.5) * 0.1,
-          0.78 + 0.05 + Math.random() * 0.04,
-          pos.z + (Math.random() - 0.5) * 0.1
+          pos.x + (Math.random() - 0.5) * r * 1.0,
+          0.78 + h * 0.3 + Math.random() * h * 0.4,
+          pos.z + (Math.random() - 0.5) * r * 1.0
+        );
+        this.scene.add(sphere);
+      }
+    } else {
+      for (let i = 0; i < 6; i++) {
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 8), fillMat);
+        sphere.position.set(
+          pos.x + (Math.random() - 0.5) * r * 1.0,
+          0.78 + h * 0.3 + Math.random() * h * 0.4,
+          pos.z + (Math.random() - 0.5) * r * 1.0
         );
         this.scene.add(sphere);
       }

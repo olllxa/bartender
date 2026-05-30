@@ -18,6 +18,11 @@ export function computeMixColor(playerMix, ingredients) {
   g = Math.min(255, Math.round(g / totalPercent));
   b = Math.min(255, Math.round(b / totalPercent));
 
+  const avg = (r + g + b) / 3;
+  r = Math.min(255, Math.round(r + (r - avg) * 0.6));
+  g = Math.min(255, Math.round(g + (g - avg) * 0.6));
+  b = Math.min(255, Math.round(b + (b - avg) * 0.6));
+
   return (r << 16) | (g << 8) | b;
 }
 

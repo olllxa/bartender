@@ -301,12 +301,12 @@ html, body {
   line-height: 1.4;
 }
 
-/* ======== POUR PANEL (bottom) ======== */
+/* ======== POUR PANEL (center) ======== */
 .pour-panel {
   position: absolute;
-  bottom: 16px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   width: 520px;
   max-width: 90%;
   background: rgba(20, 12, 8, 0.9);
@@ -834,11 +834,11 @@ html, body {
 
 .pour-panel {
   transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: translateY(0);
+  transform: translate(-50%, -50%);
 }
 
 .pour-panel.hidden {
-  transform: translateY(20px);
+  transform: translate(-50%, -40%);
 }
 
 .result-card {
@@ -931,7 +931,7 @@ html, body {
 /* ======== HINT (click to lock) ======== */
 #lock-hint {
   position: fixed;
-  bottom: 60px;
+  top: 44%;
   left: 50%;
   transform: translateX(-50%);
   color: rgba(200, 160, 120, 0.6);

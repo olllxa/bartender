@@ -49,9 +49,9 @@ export class Glass {
     const liquidMat = new THREE.MeshStandardMaterial({
       color: 0x88cc88,
       roughness: 0.05,
-      metalness: 0.0,
+      metalness: 0.1,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.85,
     });
 
     this.liquidMesh = new THREE.Mesh(
