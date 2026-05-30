@@ -11,7 +11,7 @@ export class OrderPanel {
       <div class="order-header">ЗАКАЗ</div>
       <div class="order-divider"></div>
       <div class="order-name" id="order-name">—</div>
-      <div class="order-hint">Приготовьте коктейль по рецепту</div>
+      <div class="order-hint">Налейте [Reticle] и подайте [E]</div>
     `;
   }
 

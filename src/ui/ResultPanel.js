@@ -53,10 +53,16 @@ export class ResultPanel {
     }
 
     return new Promise(resolve => {
-      btn.onclick = () => {
+      const done = () => {
+        document.removeEventListener('keydown', onKey);
         this.hide();
         resolve();
       };
+      const onKey = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); done(); }
+      };
+      document.addEventListener('keydown', onKey);
+      btn.onclick = done;
     });
   }
 

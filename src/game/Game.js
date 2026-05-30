@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { SceneManager } from './SceneManager.js';
 import { InputManager } from './InputManager.js';
 import { PlayerController } from './PlayerController.js';
@@ -62,7 +63,7 @@ export class Game {
     });
     this.playerController.controls.addEventListener('unlock', () => {
       this.reticle.classList.remove('visible');
-      if (this.state === 'PLAYING') {
+      if (this.state === 'PLAYING' && !this.playerController.isLocked) {
         this.lockHint.classList.add('visible');
       }
     });
@@ -75,13 +76,15 @@ export class Game {
     this.sceneManager.scene.add(this.objects.shelf.group);
 
     this.objects.shaker = new Shaker();
-    this.objects.shaker.group.position.set(0.65, -0.5, -0.75);
+    this.objects.shaker.group.position.set(0.50, -0.25, -0.60);
     this.objects.shaker.group.rotation.z = 0.15;
+    this.objects.shaker.group.scale.set(1.3, 1.3, 1.3);
     camera.add(this.objects.shaker.group);
 
     this.objects.hand = new Hand();
-    this.objects.hand.group.position.set(0.65, -0.5, -0.75);
+    this.objects.hand.group.position.set(0.50, -0.25, -0.60);
     this.objects.hand.group.rotation.z = 0.15;
+    this.objects.hand.group.scale.set(1.3, 1.3, 1.3);
     camera.add(this.objects.hand.group);
 
     this.objects.glass = new Glass();
@@ -130,6 +133,16 @@ export class Game {
     this.inputManager.onHoverEnd = (ingredientId) => {
       this.objects.shelf.setGlow(ingredientId, false);
     };
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'KeyE' && this.state === 'PLAYING') {
+        this.serveDrink();
+      }
+      if (e.code === 'KeyR' && this.state === 'PLAYING') {
+        this.audio.playClick();
+        this.resetDrink();
+      }
+    });
   }
 
   setupUI() {
@@ -158,7 +171,9 @@ export class Game {
         break;
       case 'PLAYING':
         this.showOneCustomer();
-        this.lockHint.classList.add('visible');
+        if (!this.playerController.isLocked) {
+          this.lockHint.classList.add('visible');
+        }
         this.currentCocktail = getRandomCocktail();
         this.uiManager.orderPanel.setOrder(this.currentCocktail);
         this.uiManager.orderPanel.show();
@@ -201,38 +216,67 @@ export class Game {
     if (total < 1) return;
     this.objects.shelf.untiltAll();
     this.objects.shelf.clearGlow();
-    this.hideOneCustomer();
     this.setState('EVALUATING');
-
     this.startShakeAnimation();
   }
 
-  hideOneCustomer() {
-    if (this.barCustomers.length === 0) return;
+  pickVisibleCustomer() {
+    if (this.barCustomers.length === 0) return null;
     const available = this.barCustomers
       .map((g, i) => ({ group: g, index: i }))
       .filter(({ group }) => group.visible);
-    if (available.length === 0) return;
-    const pick = available[Math.floor(Math.random() * available.length)];
-    pick.group.visible = false;
+    if (available.length === 0) return null;
+    return available[Math.floor(Math.random() * available.length)];
+  }
+
+  hideOneCustomer() {
+    const pick = this.pickVisibleCustomer();
+    if (!pick) return;
     this.hiddenCustomerIndex = pick.index;
+    const origX = pick.group.position.x;
+    pick.group.userData.origX = origX;
+    this.animations.push({
+      update: (t) => { pick.group.position.x = origX + t * 2.0; },
+      duration: 0.8,
+      elapsed: 0,
+      onComplete: () => {
+        pick.group.position.x = origX;
+        pick.group.visible = false;
+      },
+    });
   }
 
   showOneCustomer() {
     if (this.barCustomers.length === 0) return;
+    let group, origX;
     if (this.hiddenCustomerIndex >= 0) {
-      const group = this.barCustomers[this.hiddenCustomerIndex];
+      group = this.barCustomers[this.hiddenCustomerIndex];
+      origX = group.userData.origX || group.position.x;
       group.visible = true;
+      group.position.x = origX + 2.0;
       this.hiddenCustomerIndex = -1;
     } else {
       const all = this.barCustomers.filter(g => g.visible);
       if (all.length < this.barCustomers.length) {
         const hidden = this.barCustomers.findIndex(g => !g.visible);
         if (hidden >= 0) {
-          this.barCustomers[hidden].visible = true;
+          group = this.barCustomers[hidden];
+          origX = group.userData.origX || group.position.x;
+          group.visible = true;
+          group.position.x = origX + 2.0;
+        } else {
+          return;
         }
+      } else {
+        return;
       }
     }
+    this.animations.push({
+      update: (t) => { group.position.x = origX + 2.0 - t * 2.0; },
+      duration: 1.0,
+      elapsed: 0,
+      onComplete: () => { group.position.x = origX; },
+    });
   }
 
   startShakeAnimation() {
@@ -300,6 +344,32 @@ export class Game {
         shaker.reset();
         shaker.group.rotation.x = 0;
         hand.group.rotation.x = 0;
+        this.startDeliverAnimation();
+      },
+    });
+  }
+
+  startDeliverAnimation() {
+    const glass = this.objects.glass;
+    const startZ = glass.group.position.z;
+    const pick = this.pickVisibleCustomer();
+    if (!pick) { this.evaluateDrink(); return; }
+    this.hiddenCustomerIndex = pick.index;
+    const origX = pick.group.position.x;
+    pick.group.userData.origX = origX;
+
+    this.animations.push({
+      update: (t) => {
+        glass.group.position.z = startZ + t * 0.7;
+        pick.group.position.x = origX + t * 2.0;
+      },
+      duration: 0.8,
+      elapsed: 0,
+      onComplete: () => {
+        glass.hide();
+        glass.group.position.z = startZ;
+        pick.group.position.x = origX;
+        pick.group.visible = false;
         this.evaluateDrink();
       },
     });
@@ -409,6 +479,7 @@ export class Game {
   }
 
   updateAnimations(dt) {
+    const completed = [];
     this.animations = this.animations.filter(anim => {
       if (anim.done) return false;
       anim.elapsed += dt;
@@ -416,11 +487,14 @@ export class Game {
       anim.update(t);
       if (t >= 1) {
         anim.done = true;
-        if (anim.onComplete) anim.onComplete();
+        completed.push(anim);
         return false;
       }
       return true;
     });
+    for (const anim of completed) {
+      if (anim.onComplete) anim.onComplete();
+    }
   }
 
   animate() {
@@ -434,6 +508,7 @@ export class Game {
       case 'PLAYING':
         this.playerController.update(dt);
         this.updateGame(dt);
+        this.updateAnimations(dt);
         break;
       case 'EVALUATING':
         this.updateAnimations(dt);

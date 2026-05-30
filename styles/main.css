@@ -636,7 +636,7 @@ html, body {
 }
 
 .recipe-card-wide {
-  max-width: 560px;
+  max-width: 480px;
 }
 
 .recipe-header {
@@ -673,23 +673,14 @@ html, body {
   border-color: rgba(200, 160, 120, 0.3);
 }
 
-.recipe-layout {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
+.recipe-content {
   margin-bottom: 16px;
 }
 
-.recipe-preview-col {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.recipe-preview {
+.recipe-preview-wrap {
   display: flex;
   justify-content: center;
+  margin-bottom: 8px;
 }
 
 .recipe-preview canvas {

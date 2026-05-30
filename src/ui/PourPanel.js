@@ -20,8 +20,8 @@ export class PourPanel {
         <span class="pour-total-value" id="pour-total-value">0%</span>
       </div>
       <div class="pour-actions">
-        <button class="pour-btn pour-btn-reset" id="pour-reset">Сбросить</button>
-        <button class="pour-btn pour-btn-serve" id="pour-serve">Подать</button>
+        <button class="pour-btn pour-btn-reset" id="pour-reset">Сбросить [R]</button>
+        <button class="pour-btn pour-btn-serve" id="pour-serve">Подать [E]</button>
       </div>
     `;
   }
