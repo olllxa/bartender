@@ -393,55 +393,33 @@ export class SceneManager {
   }
 
   setupDecor() {
-    const frameMat = new THREE.MeshStandardMaterial({
-      color: 0xc8a060, roughness: 0.5, metalness: 0.2,
-    });
-
-    const artColors = [0x8b5e3c, 0x5c3a1e, 0x6b4226, 0x7a4a34, 0x9a6a4a];
     const W = 4;
-    const artPositions = [
-      { x: -3.0, z: -3.46 },
-      { x: 3.0, z: -3.46 },
-      { x: -W + 0.04, z: -1.0, ry: Math.PI / 2 },
-    ];
 
-    artPositions.forEach((ap, i) => {
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.55, 0.04), frameMat);
-      frame.position.set(ap.x, 2.0, ap.z);
-      if (ap.ry) frame.rotation.y = ap.ry;
-      this.scene.add(frame);
-
-      const art = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.68, 0.43),
-        new THREE.MeshStandardMaterial({
-          color: artColors[i % artColors.length],
-          roughness: 0.8, metalness: 0.0,
-        })
-      );
-      art.position.set(ap.x, 2.0, ap.z);
-      if (ap.ry) art.rotation.y = ap.ry;
-      this.scene.add(art);
-    });
-
-    const paintingLoader = new GLTFLoader();
-    paintingLoader.load('painting_by_zdzislaw_beksinski_3.glb', (gltf) => {
-      const model = gltf.scene;
-      const box = new THREE.Box3().setFromObject(model);
-      const size = box.getSize(new THREE.Vector3());
-      const targetH = 1.1;
-      const s = targetH / size.y;
-      model.scale.set(s, s, s);
-      model.position.set(W - 0.04, 2.0, -1.0);
-      model.rotation.y = -Math.PI / 2;
-      model.traverse((child) => {
-        if (child.isMesh && child.material.map) {
-          child.material.emissive = new THREE.Color(0xffffff);
-          child.material.emissiveIntensity = 0.5;
-          child.material.emissiveMap = child.material.map;
-        }
+    const loadPainting = (url, x, z, ry) => {
+      const loader = new GLTFLoader();
+      loader.load(url, (gltf) => {
+        const model = gltf.scene;
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const s = 1.1 / size.y;
+        model.scale.set(s, s, s);
+        model.position.set(x, 2.0, z);
+        if (ry) model.rotation.y = ry;
+        model.traverse((child) => {
+          if (child.isMesh && child.material.map) {
+            child.material.emissive = new THREE.Color(0xffffff);
+            child.material.emissiveIntensity = 0.5;
+            child.material.emissiveMap = child.material.map;
+          }
+        });
+        this.scene.add(model);
       });
-      this.scene.add(model);
-    });
+    };
+
+    loadPainting('painting_by_zdzislaw_beksinski_3.glb', W - 0.04, -1.0, -Math.PI / 2);
+    loadPainting('painting_of_a_walrus_on_a_unicycle.glb', 3.0, -3.46, 0);
+    loadPainting('psx_painting.glb', -3.0, -3.46, 0);
+    loadPainting('4e02db196539451f8c1322b78e704c87.glb', -W + 0.04, -1.0, Math.PI / 2);
 
     const tvBodyMat = new THREE.MeshStandardMaterial({
       color: 0x111111, roughness: 0.3, metalness: 0.3,
