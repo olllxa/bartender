@@ -64,6 +64,10 @@ export class BottleShelf {
         vodka: { file: 'absolut_vodka_1l_bottle.glb', scale: 0.56 },
         tequila: { file: 'tequila_don_pablo.glb', scale: 0.28, rotateY: Math.PI / 2 },
         white_rum: { file: 'bottlea.glb', scale: 0.56 },
+        gin: { file: 'bombay_sapphire.glb', scale: 0.56, rotateY: Math.PI / 2 },
+        triple_sec: { file: 'maraschino_liqueur.glb', scale: 0.56, rotateY: Math.PI },
+        dry_vermouth: { file: 'shiraz_wine.glb', scale: 0.56 },
+        sweet_vermouth: { file: 'wine_bottle.glb', scale: 0.56 },
       };
 
       if (glbBottles[id]) {
