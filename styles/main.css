@@ -682,6 +682,9 @@ html, body {
 
 .recipe-preview-col {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .recipe-preview {

@@ -39,6 +39,10 @@ export class Game {
 
     this.audio = new AudioManager();
     this.particles = null;
+
+    this.barCustomers = [];
+    this.lastCustomerIndex = -1;
+    this.hiddenCustomerIndex = -1;
   }
 
   init() {
@@ -71,12 +75,12 @@ export class Game {
     this.sceneManager.scene.add(this.objects.shelf.group);
 
     this.objects.shaker = new Shaker();
-    this.objects.shaker.group.position.set(0.5, -0.4, -0.6);
+    this.objects.shaker.group.position.set(0.65, -0.5, -0.75);
     this.objects.shaker.group.rotation.z = 0.15;
     camera.add(this.objects.shaker.group);
 
     this.objects.hand = new Hand();
-    this.objects.hand.group.position.set(0.5, -0.4, -0.6);
+    this.objects.hand.group.position.set(0.65, -0.5, -0.75);
     this.objects.hand.group.rotation.z = 0.15;
     camera.add(this.objects.hand.group);
 
@@ -85,6 +89,7 @@ export class Game {
     this.sceneManager.scene.add(this.objects.glass.group);
 
     this.particles = new ParticleSystem(this.sceneManager.scene);
+    this.barCustomers = this.sceneManager.getBarCustomerGroups();
 
     this.setupInput();
     this.setupUI();
@@ -152,6 +157,7 @@ export class Game {
         this.uiManager.showWelcome();
         break;
       case 'PLAYING':
+        this.showOneCustomer();
         this.lockHint.classList.add('visible');
         this.currentCocktail = getRandomCocktail();
         this.uiManager.orderPanel.setOrder(this.currentCocktail);
@@ -195,9 +201,38 @@ export class Game {
     if (total < 1) return;
     this.objects.shelf.untiltAll();
     this.objects.shelf.clearGlow();
+    this.hideOneCustomer();
     this.setState('EVALUATING');
 
     this.startShakeAnimation();
+  }
+
+  hideOneCustomer() {
+    if (this.barCustomers.length === 0) return;
+    const available = this.barCustomers
+      .map((g, i) => ({ group: g, index: i }))
+      .filter(({ group }) => group.visible);
+    if (available.length === 0) return;
+    const pick = available[Math.floor(Math.random() * available.length)];
+    pick.group.visible = false;
+    this.hiddenCustomerIndex = pick.index;
+  }
+
+  showOneCustomer() {
+    if (this.barCustomers.length === 0) return;
+    if (this.hiddenCustomerIndex >= 0) {
+      const group = this.barCustomers[this.hiddenCustomerIndex];
+      group.visible = true;
+      this.hiddenCustomerIndex = -1;
+    } else {
+      const all = this.barCustomers.filter(g => g.visible);
+      if (all.length < this.barCustomers.length) {
+        const hidden = this.barCustomers.findIndex(g => !g.visible);
+        if (hidden >= 0) {
+          this.barCustomers[hidden].visible = true;
+        }
+      }
+    }
   }
 
   startShakeAnimation() {

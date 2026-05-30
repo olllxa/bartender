@@ -11,12 +11,14 @@ export class SceneManager {
     this.camera = null;
     this.renderer = null;
     this.cssRenderer = null;
+    this.barCustomerGroups = [];
+    this.tableCustomerGroups = [];
   }
 
   init() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x1a0f0a);
-    this.scene.fog = new THREE.Fog(0x1a0f0a, 6, 14);
+    this.scene.fog = new THREE.Fog(0x1a0f0a, 5, 10);
 
     this.setupCamera();
     this.setupRenderer();
@@ -70,11 +72,11 @@ export class SceneManager {
     warmLight.shadow.mapSize.width = 1024;
     warmLight.shadow.mapSize.height = 1024;
     warmLight.shadow.camera.near = 0.1;
-    warmLight.shadow.camera.far = 12;
-    warmLight.shadow.camera.left = -6;
-    warmLight.shadow.camera.right = 6;
-    warmLight.shadow.camera.top = 6;
-    warmLight.shadow.camera.bottom = -6;
+    warmLight.shadow.camera.far = 10;
+    warmLight.shadow.camera.left = -5;
+    warmLight.shadow.camera.right = 5;
+    warmLight.shadow.camera.top = 5;
+    warmLight.shadow.camera.bottom = -5;
     this.scene.add(warmLight);
 
     const fillLight = new THREE.DirectionalLight(0x8899ff, 0.2);
@@ -82,19 +84,19 @@ export class SceneManager {
     this.scene.add(fillLight);
 
     const rimLight = new THREE.DirectionalLight(0xff8844, 0.4);
-    rimLight.position.set(-1, 2, -5);
+    rimLight.position.set(-1, 2, -4);
     this.scene.add(rimLight);
 
     for (const z of [1.5, -1.0]) {
-      const light = new THREE.PointLight(0xffd8a0, 0.5, 5);
+      const light = new THREE.PointLight(0xffd8a0, 0.5, 4);
       light.position.set(0, 3.0, z);
       this.scene.add(light);
     }
 
-    for (const z of [3.5, 4.5]) {
-      const tableLight = new THREE.PointLight(0xffd8a0, 0.2, 4);
-      tableLight.position.set(2.5, 2.8, z);
-      this.scene.add(tableLight);
+    for (const z of [3.0, 3.8]) {
+      const light = new THREE.PointLight(0xffd8a0, 0.2, 3);
+      light.position.set(2.0, 2.8, z);
+      this.scene.add(light);
     }
 
     const shelfLight = new THREE.SpotLight(0xffeedd, 0.5);
@@ -102,7 +104,7 @@ export class SceneManager {
     shelfLight.angle = 0.8;
     shelfLight.penumbra = 0.5;
     shelfLight.decay = 1;
-    shelfLight.distance = 6;
+    shelfLight.distance = 5;
     shelfLight.target.position.set(0, 1.5, -2.75);
     this.scene.add(shelfLight);
     this.scene.add(shelfLight.target);
@@ -114,9 +116,9 @@ export class SceneManager {
       roughness: 0.85,
       metalness: 0.05,
     });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 14), floorMat);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(12, 8), floorMat);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, 0, 1);
+    floor.position.set(0, 0, 0.5);
     floor.receiveShadow = true;
     this.scene.add(floor);
 
@@ -127,8 +129,8 @@ export class SceneManager {
       transparent: true,
       opacity: 0.06,
     });
-    for (let i = -6; i <= 6; i += 0.4) {
-      const line = new THREE.Mesh(new THREE.PlaneGeometry(18, 0.008), plankMat);
+    for (let i = -3.5; i <= 4.5; i += 0.4) {
+      const line = new THREE.Mesh(new THREE.PlaneGeometry(12, 0.008), plankMat);
       line.rotation.x = -Math.PI / 2;
       line.position.set(0, 0.001, i);
       this.scene.add(line);
@@ -140,8 +142,8 @@ export class SceneManager {
       metalness: 0.0,
     });
 
-    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(18, 4), wallMat);
-    backWall.position.set(0, 2, -4);
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 4), wallMat);
+    backWall.position.set(0, 2, -3.5);
     backWall.receiveShadow = true;
     this.scene.add(backWall);
 
@@ -150,24 +152,24 @@ export class SceneManager {
       roughness: 0.85,
       metalness: 0.0,
     });
-    const wainscot = new THREE.Mesh(new THREE.PlaneGeometry(18, 0.6), wainscotMat);
-    wainscot.position.set(0, 0.3, -3.98);
+    const wainscot = new THREE.Mesh(new THREE.PlaneGeometry(12, 0.6), wainscotMat);
+    wainscot.position.set(0, 0.3, -3.48);
     this.scene.add(wainscot);
 
-    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(14, 4), wallMat);
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(8.5, 4), wallMat);
     leftWall.rotation.y = Math.PI / 2;
-    leftWall.position.set(-9, 2, 0);
+    leftWall.position.set(-6, 2, 0.5);
     this.scene.add(leftWall);
 
-    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(14, 4), wallMat);
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(8.5, 4), wallMat);
     rightWall.rotation.y = -Math.PI / 2;
-    rightWall.position.set(9, 2, 0);
+    rightWall.position.set(6, 2, 0.5);
     this.scene.add(rightWall);
 
-    for (const [x, z] of [[-9, 0], [9, 0]]) {
-      const ws = new THREE.Mesh(new THREE.PlaneGeometry(14, 0.6), wainscotMat);
+    for (const [x, z] of [[-6, 0.5], [6, 0.5]]) {
+      const ws = new THREE.Mesh(new THREE.PlaneGeometry(8.5, 0.6), wainscotMat);
       ws.rotation.y = x > 0 ? -Math.PI / 2 : Math.PI / 2;
-      ws.position.set(x, 0.3, 0);
+      ws.position.set(x, 0.3, z);
       this.scene.add(ws);
     }
 
@@ -176,84 +178,70 @@ export class SceneManager {
       roughness: 0.8,
       metalness: 0.0,
     });
-    const crownMolding = new THREE.Mesh(new THREE.BoxGeometry(18, 0.04, 0.08), crownMat);
-    crownMolding.position.set(0, 3.98, -3.96);
+    const crownMolding = new THREE.Mesh(new THREE.BoxGeometry(12, 0.04, 0.08), crownMat);
+    crownMolding.position.set(0, 3.98, -3.46);
     this.scene.add(crownMolding);
   }
 
   setupWindows() {
     const frameMat = new THREE.MeshStandardMaterial({
-      color: 0xc8a060,
-      roughness: 0.5,
-      metalness: 0.2,
+      color: 0xc8a060, roughness: 0.5, metalness: 0.2,
     });
     const glassMat = new THREE.MeshStandardMaterial({
-      color: 0x88aacc,
-      roughness: 0.1,
-      metalness: 0.0,
-      transparent: true,
-      opacity: 0.15,
+      color: 0x88aacc, roughness: 0.1, metalness: 0.0,
+      transparent: true, opacity: 0.15,
     });
     const glowMat = new THREE.MeshStandardMaterial({
-      color: 0xaaccff,
-      roughness: 0.1,
-      metalness: 0.0,
-      transparent: true,
-      opacity: 0.05,
+      color: 0xaaccff, roughness: 0.1, metalness: 0.0,
+      transparent: true, opacity: 0.05,
+    });
+    const paneMat = new THREE.MeshStandardMaterial({
+      color: 0x8a6040, roughness: 0.6, metalness: 0.0,
     });
 
-    const windowPositions = [
-      { x: -7.5, z: -3.96, ry: 0 },
-      { x: -4.0, z: -3.96, ry: 0 },
-      { x: 7.5, z: -3.96, ry: 0 },
-      { x: 4.0, z: -3.96, ry: 0 },
-      { x: -8.96, z: 3.0, ry: Math.PI / 2 },
-      { x: 8.96, z: 3.0, ry: -Math.PI / 2 },
+    const positions = [
+      { x: -4.5, z: -3.46, ry: 0 },
+      { x: 4.5, z: -3.46, ry: 0 },
+      { x: -5.96, z: 1.0, ry: Math.PI / 2 },
+      { x: 5.96, z: 1.0, ry: -Math.PI / 2 },
+      { x: -5.96, z: 3.0, ry: Math.PI / 2 },
+      { x: 5.96, z: 3.0, ry: -Math.PI / 2 },
     ];
 
-    for (const wp of windowPositions) {
-      const outer = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.9, 0.04), frameMat);
-      outer.position.set(wp.x, 2.2, wp.z);
-      if (wp.ry) outer.rotation.y = wp.ry;
+    for (const p of positions) {
+      const outer = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.8, 0.04), frameMat);
+      outer.position.set(p.x, 2.2, p.z);
+      if (p.ry) outer.rotation.y = p.ry;
       this.scene.add(outer);
 
-      const inner = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.7), glowMat);
-      inner.position.set(wp.x, 2.2, wp.z);
-      if (wp.ry) inner.rotation.y = wp.ry;
+      const inner = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.6), glowMat);
+      inner.position.set(p.x, 2.2, p.z);
+      if (p.ry) inner.rotation.y = p.ry;
       this.scene.add(inner);
 
-      const glass = new THREE.Mesh(new THREE.PlaneGeometry(1.15, 0.65), glassMat);
-      glass.position.set(wp.x, 2.2, wp.z);
-      if (wp.ry) glass.rotation.y = wp.ry;
+      const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.55), glassMat);
+      glass.position.set(p.x, 2.2, p.z);
+      if (p.ry) glass.rotation.y = p.ry;
       this.scene.add(glass);
-    }
 
-    const paneMat = new THREE.MeshStandardMaterial({
-      color: 0x8a6040,
-      roughness: 0.6,
-      metalness: 0.0,
-    });
-    const crossPositions = [
-      { x: -7.5, z: -3.96 }, { x: -4.0, z: -3.96 },
-      { x: 7.5, z: -3.96 }, { x: 4.0, z: -3.96 },
-    ];
-    for (const cp of crossPositions) {
-      const hBar = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.02, 0.03), paneMat);
-      hBar.position.set(cp.x, 2.2, cp.z);
-      this.scene.add(hBar);
+      if (Math.abs(p.x) < 6) {
+        const hBar = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.02, 0.03), paneMat);
+        hBar.position.set(p.x, 2.2, p.z);
+        this.scene.add(hBar);
 
-      const vBar = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.75, 0.03), paneMat);
-      vBar.position.set(cp.x, 2.2, cp.z);
-      this.scene.add(vBar);
+        const vBar = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.65, 0.03), paneMat);
+        vBar.position.set(p.x, 2.2, p.z);
+        this.scene.add(vBar);
+      }
     }
   }
 
   setupFurniture() {
     const stoolPositions = [
-      { x: -1.2, z: 2.7 },
-      { x: -0.4, z: 2.7 },
-      { x: 0.4, z: 2.7 },
-      { x: 1.2, z: 2.7 },
+      { x: -1.2, z: 2.4 },
+      { x: -0.4, z: 2.4 },
+      { x: 0.4, z: 2.4 },
+      { x: 1.2, z: 2.4 },
     ];
 
     for (const pos of stoolPositions) {
@@ -263,9 +251,9 @@ export class SceneManager {
     }
 
     const tablePositions = [
-      { x: -3.0, z: 3.8 },
-      { x: 3.0, z: 3.8 },
-      { x: 0, z: 4.5 },
+      { x: -2.5, z: 3.2 },
+      { x: 2.5, z: 3.2 },
+      { x: 0, z: 3.8 },
     ];
 
     for (const pos of tablePositions) {
@@ -276,59 +264,57 @@ export class SceneManager {
   }
 
   setupCustomers() {
-    const customerPositions = [
-      { x: -1.2, z: 2.55 },
-      { x: -0.4, z: 2.55 },
-      { x: 0.4, z: 2.55 },
-      { x: 1.2, z: 2.55 },
+    const barPositions = [
+      { x: -1.2, z: 2.25 },
+      { x: -0.4, z: 2.25 },
+      { x: 0.4, z: 2.25 },
+      { x: 1.2, z: 2.25 },
     ];
 
-    customerPositions.forEach((pos, i) => {
+    barPositions.forEach((pos, i) => {
       const customer = new BarCustomer(i);
       customer.group.position.set(pos.x, 0.72, pos.z);
       customer.group.rotation.y = Math.PI;
       this.scene.add(customer.group);
+      this.barCustomerGroups.push(customer.group);
     });
 
-    const seatedPositions = [
-      { x: -3.0, z: 3.5 },
-      { x: 3.0, z: 3.5 },
-      { x: 0, z: 4.2 },
+    const tablePositions = [
+      { x: -2.5, z: 2.9, rot: 0.3 },
+      { x: 2.5, z: 2.9, rot: -0.3 },
+      { x: 0, z: 3.5, rot: 0 },
     ];
 
-    seatedPositions.forEach((pos, i) => {
+    tablePositions.forEach((pos, i) => {
       const customer = new BarCustomer(i + 4);
       customer.group.position.set(pos.x, 0.74, pos.z);
-      customer.group.rotation.y = (i + 1) * 0.3;
+      customer.group.rotation.y = pos.rot;
       this.scene.add(customer.group);
+      this.tableCustomerGroups.push(customer.group);
     });
   }
 
   setupDecor() {
     const frameMat = new THREE.MeshStandardMaterial({
-      color: 0xc8a060,
-      roughness: 0.5,
-      metalness: 0.2,
+      color: 0xc8a060, roughness: 0.5, metalness: 0.2,
     });
 
-    const artColors = [0x8b5e3c, 0x5c3a1e, 0x6b4226, 0x7a4a34, 0x9a6a4a, 0x4a2a18];
+    const artColors = [0x8b5e3c, 0x5c3a1e, 0x6b4226, 0x7a4a34, 0x9a6a4a];
     const artPositions = [
-      { x: -6.0, z: -3.96 },
-      { x: -3.8, z: -3.96 },
-      { x: 3.8, z: -3.96 },
-      { x: 6.0, z: -3.96 },
-      { x: -8.96, z: -1.0, ry: Math.PI / 2 },
-      { x: 8.96, z: -1.0, ry: -Math.PI / 2 },
+      { x: -4.0, z: -3.46 },
+      { x: 4.0, z: -3.46 },
+      { x: -5.96, z: -1.0, ry: Math.PI / 2 },
+      { x: 5.96, z: -1.0, ry: -Math.PI / 2 },
     ];
 
     artPositions.forEach((ap, i) => {
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.7, 0.04), frameMat);
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.55, 0.04), frameMat);
       frame.position.set(ap.x, 2.0, ap.z);
       if (ap.ry) frame.rotation.y = ap.ry;
       this.scene.add(frame);
 
       const art = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.85, 0.55),
+        new THREE.PlaneGeometry(0.68, 0.43),
         new THREE.MeshStandardMaterial({
           color: artColors[i % artColors.length],
           roughness: 0.8, metalness: 0.0,
@@ -340,28 +326,26 @@ export class SceneManager {
     });
 
     const pendantMat = new THREE.MeshStandardMaterial({
-      color: 0xcc8844,
-      roughness: 0.6,
-      metalness: 0.2,
-      transparent: true,
-      opacity: 0.6,
+      color: 0xcc8844, roughness: 0.6, metalness: 0.2,
+      transparent: true, opacity: 0.6,
     });
     const shadeMat = new THREE.MeshStandardMaterial({
-      color: 0x332211,
-      roughness: 0.9,
-      metalness: 0.0,
+      color: 0x332211, roughness: 0.9, metalness: 0.0,
     });
 
-    for (const z of [1.5, -1.0, 3.8]) {
-      const xPos = z === 3.8 ? 2.5 : 0;
-      const shade = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 0.15, 10), shadeMat);
-      shade.position.set(xPos, 2.9, z);
+    for (const [x, z] of [[0, 1.5], [0, -1.0], [2.0, 3.2]]) {
+      const shade = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.26, 0.12, 10), shadeMat);
+      shade.position.set(x, 2.9, z);
       this.scene.add(shade);
 
-      const glow = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), pendantMat);
-      glow.position.set(xPos, 2.82, z);
+      const glow = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), pendantMat);
+      glow.position.set(x, 2.83, z);
       this.scene.add(glow);
     }
+  }
+
+  getBarCustomerGroups() {
+    return this.barCustomerGroups;
   }
 
   setupResize() {
