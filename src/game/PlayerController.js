@@ -30,15 +30,11 @@ export class PlayerController {
     if (!this.isLocked) return;
 
     const speed = this.moveSpeed * dt;
-    const euler = new THREE.Euler(0, this.camera.rotation.y, 0, 'YXZ');
-    const quat = new THREE.Quaternion().setFromEuler(euler);
-    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(quat);
-    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(quat);
 
-    if (this.keys['KeyW']) this.camera.position.addScaledVector(forward, speed);
-    if (this.keys['KeyS']) this.camera.position.addScaledVector(forward, -speed);
-    if (this.keys['KeyA']) this.camera.position.addScaledVector(right, -speed);
-    if (this.keys['KeyD']) this.camera.position.addScaledVector(right, speed);
+    if (this.keys['KeyW']) this.camera.position.z -= speed;
+    if (this.keys['KeyS']) this.camera.position.z += speed;
+    if (this.keys['KeyA']) this.camera.position.x -= speed;
+    if (this.keys['KeyD']) this.camera.position.x += speed;
 
     this.camera.position.y = 1.6;
     this.camera.position.x = Math.max(-2.5, Math.min(2.5, this.camera.position.x));
