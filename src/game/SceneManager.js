@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { BarStool } from './objects/BarStool.js';
 import { BarCustomer } from './objects/BarCustomer.js';
 import { BarTable } from './objects/BarTable.js';
@@ -231,57 +232,35 @@ export class SceneManager {
   }
 
   setupWindows() {
-    const frameMat = new THREE.MeshStandardMaterial({
-      color: 0xc8a060, roughness: 0.5, metalness: 0.2,
-    });
-    const glassMat = new THREE.MeshStandardMaterial({
-      color: 0x88aacc, roughness: 0.1, metalness: 0.0,
-      transparent: true, opacity: 0.15,
-    });
-    const glowMat = new THREE.MeshStandardMaterial({
-      color: 0xaaccff, roughness: 0.1, metalness: 0.0,
-      transparent: true, opacity: 0.05,
-    });
-    const paneMat = new THREE.MeshStandardMaterial({
-      color: 0x8a6040, roughness: 0.6, metalness: 0.0,
-    });
-
     const W = 4;
     const positions = [
-      { x: -2.5, z: -3.46, ry: 0 },
-      { x: 2.5, z: -3.46, ry: 0 },
       { x: -W + 0.04, z: 1.0, ry: Math.PI / 2 },
       { x: W - 0.04, z: 1.0, ry: -Math.PI / 2 },
       { x: -W + 0.04, z: 3.0, ry: Math.PI / 2 },
       { x: W - 0.04, z: 3.0, ry: -Math.PI / 2 },
     ];
 
-    for (const p of positions) {
-      const outer = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.8, 0.04), frameMat);
-      outer.position.set(p.x, 2.2, p.z);
-      if (p.ry) outer.rotation.y = p.ry;
-      this.scene.add(outer);
+    const glowMat = new THREE.MeshStandardMaterial({
+      color: 0xaaccff, roughness: 0.1, metalness: 0.0,
+      transparent: true, opacity: 0.12,
+    });
 
-      const inner = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.6), glowMat);
-      inner.position.set(p.x, 2.2, p.z);
-      if (p.ry) inner.rotation.y = p.ry;
-      this.scene.add(inner);
+    const loader = new GLTFLoader();
+    loader.load('gothic_window.glb', (gltf) => {
+      const model = gltf.scene;
+      model.scale.set(0.27, 0.27, 0.27);
+      for (const p of positions) {
+        const inst = model.clone();
+        inst.position.set(p.x, 2.0, p.z);
+        if (p.ry) inst.rotation.y = p.ry;
+        this.scene.add(inst);
 
-      const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.55), glassMat);
-      glass.position.set(p.x, 2.2, p.z);
-      if (p.ry) glass.rotation.y = p.ry;
-      this.scene.add(glass);
-
-      if (Math.abs(p.x) < 6) {
-        const hBar = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.02, 0.03), paneMat);
-        hBar.position.set(p.x, 2.2, p.z);
-        this.scene.add(hBar);
-
-        const vBar = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.65, 0.03), paneMat);
-        vBar.position.set(p.x, 2.2, p.z);
-        this.scene.add(vBar);
+        const glow = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.5), glowMat);
+        glow.position.set(p.x, 2.0, p.z);
+        if (p.ry) glow.rotation.y = p.ry;
+        this.scene.add(glow);
       }
-    }
+    });
   }
 
   createGlass(pos, yBase, color) {
