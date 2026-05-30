@@ -21,7 +21,7 @@ export class RecipeBook {
       <div class="recipe-backdrop"></div>
       <div class="recipe-card recipe-card-wide">
         <div class="recipe-header">
-          <span class="recipe-title">📖 РЕЦЕПТЫ</span>
+          <span class="recipe-title">РЕЦЕПТЫ</span>
           <button class="recipe-close" id="recipe-close">✕</button>
         </div>
         <div class="recipe-layout">
@@ -140,8 +140,8 @@ export class RecipeBook {
     this.previewScene.background = null;
 
     this.previewCamera = new THREE.PerspectiveCamera(35, 160 / 240, 0.1, 10);
-    this.previewCamera.position.set(0, 0.08, 0.65);
-    this.previewCamera.lookAt(0, 0.025, 0);
+    this.previewCamera.position.set(0, -0.02, 0.65);
+    this.previewCamera.lookAt(0, -0.04, 0);
 
     const ambient = new THREE.AmbientLight(0x8899aa, 0.6);
     this.previewScene.add(ambient);
