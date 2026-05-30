@@ -173,6 +173,24 @@ export class SceneManager {
       this.scene.add(ws);
     }
 
+    const ceilingMat = new THREE.MeshStandardMaterial({
+      color: 0x3d2b1f,
+      roughness: 0.9, metalness: 0.0,
+    });
+    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(12, 8.5), ceilingMat);
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.set(0, 4, 0.5);
+    this.scene.add(ceiling);
+
+    const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 4), wallMat);
+    frontWall.position.set(0, 2, 4.5);
+    frontWall.receiveShadow = true;
+    this.scene.add(frontWall);
+
+    const fwWainscot = new THREE.Mesh(new THREE.PlaneGeometry(12, 0.6), wainscotMat);
+    fwWainscot.position.set(0, 0.3, 4.48);
+    this.scene.add(fwWainscot);
+
     const crownMat = new THREE.MeshStandardMaterial({
       color: 0x6b4a34,
       roughness: 0.8,
@@ -181,6 +199,10 @@ export class SceneManager {
     const crownMolding = new THREE.Mesh(new THREE.BoxGeometry(12, 0.04, 0.08), crownMat);
     crownMolding.position.set(0, 3.98, -3.46);
     this.scene.add(crownMolding);
+
+    const fwCrown = new THREE.Mesh(new THREE.BoxGeometry(12, 0.04, 0.08), crownMat);
+    fwCrown.position.set(0, 3.98, 4.46);
+    this.scene.add(fwCrown);
   }
 
   setupWindows() {
@@ -236,6 +258,47 @@ export class SceneManager {
     }
   }
 
+  createBucket(pos, fillColor, fillType) {
+    const bucketMat = new THREE.MeshStandardMaterial({
+      color: 0x8a8a8a, roughness: 0.4, metalness: 0.6,
+    });
+    const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.08, 0.12, 12), bucketMat);
+    bucket.position.set(pos.x, 0.78 + 0.06, pos.z);
+    bucket.castShadow = true;
+    this.scene.add(bucket);
+
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.015, 6, 12), bucketMat);
+    rim.position.set(pos.x, 0.78 + 0.125, pos.z);
+    this.scene.add(rim);
+
+    const fillMat = new THREE.MeshStandardMaterial({
+      color: fillColor, roughness: 0.9, metalness: 0.0,
+    });
+
+    if (fillType === 'ice') {
+      for (let i = 0; i < 5; i++) {
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.03), fillMat);
+        cube.position.set(
+          pos.x + (Math.random() - 0.5) * 0.12,
+          0.78 + 0.06 + Math.random() * 0.04,
+          pos.z + (Math.random() - 0.5) * 0.12
+        );
+        this.scene.add(cube);
+      }
+    } else {
+      const count = fillType === 'lemon' ? 3 : 4;
+      for (let i = 0; i < count; i++) {
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.025, 6, 6), fillMat);
+        sphere.position.set(
+          pos.x + (Math.random() - 0.5) * 0.1,
+          0.78 + 0.05 + Math.random() * 0.04,
+          pos.z + (Math.random() - 0.5) * 0.1
+        );
+        this.scene.add(sphere);
+      }
+    }
+  }
+
   setupFurniture() {
     const stoolPositions = [
       { x: -1.2, z: 2.4 },
@@ -261,6 +324,10 @@ export class SceneManager {
       table.group.position.set(pos.x, 0, pos.z);
       this.scene.add(table.group);
     }
+
+    this.createBucket({ x: -2.15, z: 0.625 }, 0xccddff, 'ice');
+    this.createBucket({ x: 2.15, z: 0.625 }, 0xffdd44, 'lemon');
+    this.createBucket({ x: 1.85, z: 2.025 }, 0x44cc44, 'lime');
   }
 
   setupCustomers() {

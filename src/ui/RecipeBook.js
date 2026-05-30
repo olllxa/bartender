@@ -24,12 +24,14 @@ export class RecipeBook {
           <span class="recipe-title">📖 РЕЦЕПТЫ</span>
           <button class="recipe-close" id="recipe-close">✕</button>
         </div>
-        <div class="recipe-content">
-          <div class="recipe-name" id="recipe-name"></div>
-          <div class="recipe-list" id="recipe-list"></div>
-        </div>
-        <div class="recipe-preview-wrap">
-          <div class="recipe-preview" id="recipe-preview"></div>
+        <div class="recipe-layout">
+          <div class="recipe-preview-col">
+            <div class="recipe-preview" id="recipe-preview"></div>
+          </div>
+          <div class="recipe-content-col">
+            <div class="recipe-name" id="recipe-name"></div>
+            <div class="recipe-list" id="recipe-list"></div>
+          </div>
         </div>
         <div class="recipe-nav">
           <button class="recipe-nav-btn" id="recipe-prev">◀</button>
@@ -121,10 +123,10 @@ export class RecipeBook {
     container.innerHTML = '';
 
     const canvas = document.createElement('canvas');
-    canvas.width = 200;
-    canvas.height = 320;
-    canvas.style.width = '200px';
-    canvas.style.height = '320px';
+    canvas.width = 160;
+    canvas.height = 240;
+    canvas.style.width = '160px';
+    canvas.style.height = '240px';
     container.appendChild(canvas);
 
     this.previewRenderer = new THREE.WebGLRenderer({
@@ -137,7 +139,7 @@ export class RecipeBook {
     this.previewScene = new THREE.Scene();
     this.previewScene.background = null;
 
-    this.previewCamera = new THREE.PerspectiveCamera(35, 200 / 320, 0.1, 10);
+    this.previewCamera = new THREE.PerspectiveCamera(35, 160 / 240, 0.1, 10);
     this.previewCamera.position.set(0, 0.15, 0.65);
     this.previewCamera.lookAt(0, 0.06, 0);
 
