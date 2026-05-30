@@ -111,12 +111,13 @@ export class SceneManager {
   }
 
   setupEnvironment() {
+    const W = 4;
     const floorMat = new THREE.MeshStandardMaterial({
       color: 0x3d2b1f,
       roughness: 0.85,
       metalness: 0.05,
     });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(12, 8), floorMat);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, 8), floorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(0, 0, 0.5);
     floor.receiveShadow = true;
@@ -130,7 +131,7 @@ export class SceneManager {
       opacity: 0.06,
     });
     for (let i = -3.5; i <= 4.5; i += 0.4) {
-      const line = new THREE.Mesh(new THREE.PlaneGeometry(12, 0.008), plankMat);
+      const line = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, 0.008), plankMat);
       line.rotation.x = -Math.PI / 2;
       line.position.set(0, 0.001, i);
       this.scene.add(line);
@@ -142,7 +143,7 @@ export class SceneManager {
       metalness: 0.0,
     });
 
-    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 4), wallMat);
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, 4), wallMat);
     backWall.position.set(0, 2, -3.5);
     backWall.receiveShadow = true;
     this.scene.add(backWall);
@@ -152,21 +153,21 @@ export class SceneManager {
       roughness: 0.85,
       metalness: 0.0,
     });
-    const wainscot = new THREE.Mesh(new THREE.PlaneGeometry(12, 0.6), wainscotMat);
+    const wainscot = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, 0.6), wainscotMat);
     wainscot.position.set(0, 0.3, -3.48);
     this.scene.add(wainscot);
 
     const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(8.5, 4), wallMat);
     leftWall.rotation.y = Math.PI / 2;
-    leftWall.position.set(-6, 2, 0.5);
+    leftWall.position.set(-W, 2, 0.5);
     this.scene.add(leftWall);
 
     const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(8.5, 4), wallMat);
     rightWall.rotation.y = -Math.PI / 2;
-    rightWall.position.set(6, 2, 0.5);
+    rightWall.position.set(W, 2, 0.5);
     this.scene.add(rightWall);
 
-    for (const [x, z] of [[-6, 0.5], [6, 0.5]]) {
+    for (const [x, z] of [[-W, 0.5], [W, 0.5]]) {
       const ws = new THREE.Mesh(new THREE.PlaneGeometry(8.5, 0.6), wainscotMat);
       ws.rotation.y = x > 0 ? -Math.PI / 2 : Math.PI / 2;
       ws.position.set(x, 0.3, z);
@@ -177,32 +178,56 @@ export class SceneManager {
       color: 0x3d2b1f,
       roughness: 0.9, metalness: 0.0,
     });
-    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(12, 8.5), ceilingMat);
+    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, 8.5), ceilingMat);
     ceiling.rotation.x = Math.PI / 2;
     ceiling.position.set(0, 4, 0.5);
     this.scene.add(ceiling);
 
-    const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 4), wallMat);
-    frontWall.position.set(0, 2, 4.5);
-    frontWall.receiveShadow = true;
-    this.scene.add(frontWall);
-
-    const fwWainscot = new THREE.Mesh(new THREE.PlaneGeometry(12, 0.6), wainscotMat);
-    fwWainscot.position.set(0, 0.3, 4.48);
-    this.scene.add(fwWainscot);
-
     const crownMat = new THREE.MeshStandardMaterial({
-      color: 0x6b4a34,
-      roughness: 0.8,
-      metalness: 0.0,
+      color: 0x6b4a34, roughness: 0.8, metalness: 0.0,
     });
-    const crownMolding = new THREE.Mesh(new THREE.BoxGeometry(12, 0.04, 0.08), crownMat);
+
+    const crownMolding = new THREE.Mesh(new THREE.BoxGeometry(W * 2, 0.04, 0.08), crownMat);
     crownMolding.position.set(0, 3.98, -3.46);
     this.scene.add(crownMolding);
 
-    const fwCrown = new THREE.Mesh(new THREE.BoxGeometry(12, 0.04, 0.08), crownMat);
-    fwCrown.position.set(0, 3.98, 4.46);
-    this.scene.add(fwCrown);
+    const doorHalf = 0.6;
+    for (const side of [-1, 1]) {
+      const w = new THREE.Mesh(new THREE.PlaneGeometry(W - doorHalf, 4), wallMat);
+      w.position.set(side * ((W - doorHalf) / 2 + doorHalf / 2), 2, 4.5);
+      w.receiveShadow = true;
+      this.scene.add(w);
+
+      const ws = new THREE.Mesh(new THREE.PlaneGeometry(W - doorHalf, 0.6), wainscotMat);
+      ws.position.set(side * ((W - doorHalf) / 2 + doorHalf / 2), 0.3, 4.48);
+      this.scene.add(ws);
+
+      const fwCrownSection = new THREE.Mesh(new THREE.BoxGeometry(W - doorHalf, 0.04, 0.08), crownMat);
+      fwCrownSection.position.set(side * ((W - doorHalf) / 2 + doorHalf / 2), 3.98, 4.46);
+      this.scene.add(fwCrownSection);
+    }
+
+    const doorH = 2.3;
+    const doorFrameMat = new THREE.MeshStandardMaterial({
+      color: 0x5a3a24, roughness: 0.7, metalness: 0.05,
+    });
+    const doorPosY = doorH / 2;
+    for (const x of [-doorHalf, doorHalf]) {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.08, doorH, 0.08), doorFrameMat);
+      post.position.set(x, doorPosY, 4.45);
+      this.scene.add(post);
+    }
+    const topBeam = new THREE.Mesh(new THREE.BoxGeometry(doorHalf * 2, 0.08, 0.08), doorFrameMat);
+    topBeam.position.set(0, doorH, 4.45);
+    this.scene.add(topBeam);
+
+    const doorMat = new THREE.MeshStandardMaterial({
+      color: 0x3a2214, roughness: 0.8, metalness: 0.05,
+    });
+    const door = new THREE.Mesh(new THREE.BoxGeometry(doorHalf * 2 - 0.04, doorH - 0.04, 0.04), doorMat);
+    door.position.set(0.2, doorPosY, 4.48);
+    door.rotation.y = -0.3;
+    this.scene.add(door);
   }
 
   setupWindows() {
@@ -221,13 +246,14 @@ export class SceneManager {
       color: 0x8a6040, roughness: 0.6, metalness: 0.0,
     });
 
+    const W = 4;
     const positions = [
-      { x: -4.5, z: -3.46, ry: 0 },
-      { x: 4.5, z: -3.46, ry: 0 },
-      { x: -5.96, z: 1.0, ry: Math.PI / 2 },
-      { x: 5.96, z: 1.0, ry: -Math.PI / 2 },
-      { x: -5.96, z: 3.0, ry: Math.PI / 2 },
-      { x: 5.96, z: 3.0, ry: -Math.PI / 2 },
+      { x: -2.5, z: -3.46, ry: 0 },
+      { x: 2.5, z: -3.46, ry: 0 },
+      { x: -W + 0.04, z: 1.0, ry: Math.PI / 2 },
+      { x: W - 0.04, z: 1.0, ry: -Math.PI / 2 },
+      { x: -W + 0.04, z: 3.0, ry: Math.PI / 2 },
+      { x: W - 0.04, z: 3.0, ry: -Math.PI / 2 },
     ];
 
     for (const p of positions) {
@@ -258,56 +284,91 @@ export class SceneManager {
     }
   }
 
-  createBucket(pos, fillColor, fillType) {
-    const bucketMat = new THREE.MeshStandardMaterial({
-      color: 0x8a8a8a, roughness: 0.4, metalness: 0.6,
+  createGlass(pos, yBase, color) {
+    const glassMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.3,
     });
-    const r = 0.14, h = 0.18;
-    const bucket = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.8, h, 12), bucketMat);
-    bucket.position.set(pos.x, 0.78 + h / 2, pos.z);
-    bucket.castShadow = true;
-    this.scene.add(bucket);
+    const g = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.1, 8), glassMat);
+    g.position.set(pos.x, yBase + 0.05, pos.z);
+    g.castShadow = true;
+    this.scene.add(g);
+    if (color) {
+      const liquidMat = new THREE.MeshStandardMaterial({
+        color, roughness: 0.05, metalness: 0.05, transparent: true, opacity: 0.7,
+      });
+      const liq = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.055, 0.07, 8), liquidMat);
+      liq.position.set(pos.x, yBase + 0.05, pos.z);
+      this.scene.add(liq);
+    }
+  }
 
-    const rim = new THREE.Mesh(new THREE.TorusGeometry(r, 0.02, 6, 12), bucketMat);
-    rim.position.set(pos.x, 0.78 + h + 0.01, pos.z);
-    this.scene.add(rim);
-
-    const fillMat = new THREE.MeshStandardMaterial({
-      color: fillColor, roughness: 0.9, metalness: 0.0,
+  createBottle(pos, yBase, color, tall) {
+    const h = tall ? 0.28 : 0.2;
+    const bodyMat = new THREE.MeshStandardMaterial({
+      color, roughness: 0.4, metalness: 0.1,
     });
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, h, 8), bodyMat);
+    body.position.set(pos.x, yBase + h / 2, pos.z);
+    body.castShadow = true;
+    this.scene.add(body);
+    const neckMat = new THREE.MeshStandardMaterial({
+      color: 0x3a3a3a, roughness: 0.3, metalness: 0.2,
+    });
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.025, 0.04, 8), neckMat);
+    neck.position.set(pos.x, yBase + h + 0.02, pos.z);
+    this.scene.add(neck);
+  }
 
-    if (fillType === 'ice') {
-      for (let i = 0; i < 10; i++) {
-        const s = 0.025 + Math.random() * 0.025;
-        const cube = new THREE.Mesh(new THREE.BoxGeometry(s, s, s), fillMat);
-        cube.position.set(
-          pos.x + (Math.random() - 0.5) * r * 1.2,
-          0.78 + h * 0.3 + Math.random() * h * 0.5,
-          pos.z + (Math.random() - 0.5) * r * 1.2
-        );
-        cube.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-        this.scene.add(cube);
-      }
-    } else if (fillType === 'lemon') {
-      for (let i = 0; i < 6; i++) {
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), fillMat);
-        sphere.position.set(
-          pos.x + (Math.random() - 0.5) * r * 1.0,
-          0.78 + h * 0.3 + Math.random() * h * 0.4,
-          pos.z + (Math.random() - 0.5) * r * 1.0
-        );
-        this.scene.add(sphere);
-      }
-    } else {
-      for (let i = 0; i < 6; i++) {
-        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 8), fillMat);
-        sphere.position.set(
-          pos.x + (Math.random() - 0.5) * r * 1.0,
-          0.78 + h * 0.3 + Math.random() * h * 0.4,
-          pos.z + (Math.random() - 0.5) * r * 1.0
-        );
-        this.scene.add(sphere);
-      }
+  createNapkin(pos, yBase) {
+    const napkinMat = new THREE.MeshStandardMaterial({
+      color: 0xe8ddd0, roughness: 0.9, metalness: 0,
+      transparent: true, opacity: 0.4,
+    });
+    const nap = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.005, 0.08), napkinMat);
+    nap.position.set(pos.x, yBase + 0.003, pos.z);
+    this.scene.add(nap);
+  }
+
+  addCounterDecor() {
+    const y = 0.78;
+
+    this.createBottle({ x: -2.15, z: 0.6 }, y, 0xcc8844, true);
+    this.createGlass({ x: -2.15, z: 0.8 }, y, 0xddaa44);
+    this.createBottle({ x: -2.15, z: 0.45 }, y, 0x446644, false);
+    this.createGlass({ x: -2.15, z: 0.95 }, y, 0xaa6644);
+
+    this.createBottle({ x: 2.15, z: 0.6 }, y, 0xcc5533, true);
+    this.createGlass({ x: 2.15, z: 0.8 }, y, 0xcc5533);
+    this.createBottle({ x: 2.15, z: 0.45 }, y, 0x886644, true);
+    this.createGlass({ x: 2.15, z: 0.95 }, y, 0x88aa44);
+
+    const tapMat = new THREE.MeshStandardMaterial({
+      color: 0x888888, roughness: 0.3, metalness: 0.7,
+    });
+    const tap = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, 0.12, 8), tapMat);
+    tap.position.set(0, y + 0.06, 2.0);
+    this.scene.add(tap);
+    const handleMat = new THREE.MeshStandardMaterial({
+      color: 0x444444, roughness: 0.3, metalness: 0.5,
+    });
+    const handle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.02), handleMat);
+    handle.position.set(0, y + 0.13, 2.0);
+    handle.rotation.x = 0.5;
+    this.scene.add(handle);
+  }
+
+  addTableDecor() {
+    const tablePositions = [
+      { x: -2.5, z: 3.2 },
+      { x: 2.5, z: 3.2 },
+      { x: 0, z: 3.8 },
+    ];
+    const y = 0.74;
+
+    for (const pos of tablePositions) {
+      this.createNapkin({ x: pos.x + 0.08, z: pos.z - 0.06 }, y);
+      this.createGlass({ x: pos.x + 0.08, z: pos.z + 0.06 }, y, [0xcc6644, 0x88aa44, 0xddaa44][tablePositions.indexOf(pos) % 3]);
+      this.createBottle({ x: pos.x - 0.08, z: pos.z - 0.02 }, y, [0x664422, 0x553322, 0x775533][tablePositions.indexOf(pos) % 3], false);
     }
   }
 
@@ -337,9 +398,8 @@ export class SceneManager {
       this.scene.add(table.group);
     }
 
-    this.createBucket({ x: -2.15, z: 0.625 }, 0xccddff, 'ice');
-    this.createBucket({ x: 2.15, z: 0.625 }, 0xffdd44, 'lemon');
-    this.createBucket({ x: 1.85, z: 2.025 }, 0x44cc44, 'lime');
+    this.addCounterDecor();
+    this.addTableDecor();
   }
 
   setupCustomers() {
@@ -379,11 +439,12 @@ export class SceneManager {
     });
 
     const artColors = [0x8b5e3c, 0x5c3a1e, 0x6b4226, 0x7a4a34, 0x9a6a4a];
+    const W = 4;
     const artPositions = [
-      { x: -4.0, z: -3.46 },
-      { x: 4.0, z: -3.46 },
-      { x: -5.96, z: -1.0, ry: Math.PI / 2 },
-      { x: 5.96, z: -1.0, ry: -Math.PI / 2 },
+      { x: -3.0, z: -3.46 },
+      { x: 3.0, z: -3.46 },
+      { x: -W + 0.04, z: -1.0, ry: Math.PI / 2 },
+      { x: W - 0.04, z: -1.0, ry: -Math.PI / 2 },
     ];
 
     artPositions.forEach((ap, i) => {
@@ -421,6 +482,21 @@ export class SceneManager {
       glow.position.set(x, 2.83, z);
       this.scene.add(glow);
     }
+
+    const tvBodyMat = new THREE.MeshStandardMaterial({
+      color: 0x111111, roughness: 0.3, metalness: 0.3,
+    });
+    const tvScreenMat = new THREE.MeshStandardMaterial({
+      color: 0x223344, roughness: 0.1, metalness: 0.5, emissive: 0x112233, emissiveIntensity: 0.3,
+    });
+    const tv = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.35, 0.06), tvBodyMat);
+    tv.position.set(W - 0.04, 2.2, 0.2);
+    tv.rotation.y = -Math.PI / 2;
+    this.scene.add(tv);
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.29), tvScreenMat);
+    screen.position.set(W - 0.07, 2.2, 0.2);
+    screen.rotation.y = -Math.PI / 2;
+    this.scene.add(screen);
   }
 
   getBarCustomerGroups() {

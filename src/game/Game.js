@@ -435,7 +435,7 @@ export class Game {
 
     this.setState('RESULT');
 
-    this.uiManager.resultPanel.show({ correct, details }, cocktail).then(() => {
+    this.uiManager.resultPanel.show(correct).then(() => {
       this.resetDrink();
       this.objects.glass.hide();
       this.setState('PLAYING');

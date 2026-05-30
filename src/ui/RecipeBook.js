@@ -123,10 +123,10 @@ export class RecipeBook {
     container.innerHTML = '';
 
     const canvas = document.createElement('canvas');
-    canvas.width = 160;
-    canvas.height = 240;
-    canvas.style.width = '160px';
-    canvas.style.height = '240px';
+    canvas.width = 130;
+    canvas.height = 195;
+    canvas.style.width = '130px';
+    canvas.style.height = '195px';
     container.appendChild(canvas);
 
     this.previewRenderer = new THREE.WebGLRenderer({
@@ -139,9 +139,9 @@ export class RecipeBook {
     this.previewScene = new THREE.Scene();
     this.previewScene.background = null;
 
-    this.previewCamera = new THREE.PerspectiveCamera(35, 160 / 240, 0.1, 10);
-    this.previewCamera.position.set(0, -0.02, 0.65);
-    this.previewCamera.lookAt(0, -0.04, 0);
+    this.previewCamera = new THREE.PerspectiveCamera(35, 130 / 195, 0.1, 10);
+    this.previewCamera.position.set(0, 0.31, 0.65);
+    this.previewCamera.lookAt(0, 0.14, 0);
 
     const ambient = new THREE.AmbientLight(0x8899aa, 0.6);
     this.previewScene.add(ambient);

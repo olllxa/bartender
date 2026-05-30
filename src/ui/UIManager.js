@@ -45,7 +45,7 @@ export class UIManager {
 
     this.recipeBtn = document.createElement('button');
     this.recipeBtn.className = 'recipe-btn';
-    this.recipeBtn.innerHTML = '📖 Рецепты';
+    this.recipeBtn.innerHTML = 'Рецепты';
     this.recipeBtn.addEventListener('click', () => {
       if (this.game && this.game.audio) this.game.audio.playClick();
       this.recipeBook.show();
@@ -80,7 +80,7 @@ export class UIManager {
   showLevelNotification(type) {
     const el = document.createElement('div');
     el.className = `level-notification level-notification-${type}`;
-    el.textContent = type === 'up' ? '★ Уровень повышен!' : '★ Уровень понижен';
+    el.textContent = type === 'up' ? 'Уровень повышен!' : 'Уровень понижен';
     document.getElementById('game-container').appendChild(el);
     requestAnimationFrame(() => {
       el.classList.add('level-notification-visible');

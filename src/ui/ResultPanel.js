@@ -1,5 +1,3 @@
-import { INGREDIENTS } from '../data/ingredients.js';
-
 export class ResultPanel {
   constructor() {
     this.element = null;
@@ -8,52 +6,33 @@ export class ResultPanel {
 
   build() {
     this.element = document.createElement('div');
-    this.element.className = 'result-panel hidden';
+    this.element.className = 'result-notification hidden';
     this.element.innerHTML = `
-      <div class="result-backdrop"></div>
-      <div class="result-card">
-        <div class="result-icon" id="result-icon">✅</div>
-        <div class="result-title" id="result-title">Правильно!</div>
-        <div class="result-subtitle" id="result-subtitle"></div>
-        <div class="result-details" id="result-details"></div>
-        <button class="result-btn" id="result-continue">Продолжить</button>
-      </div>
+      <div class="result-notif-icon" id="result-notif-icon"></div>
+      <div class="result-notif-text" id="result-notif-text"></div>
     `;
   }
 
-  show(result, cocktail) {
+  show(correct) {
     this.element.classList.remove('hidden');
-    const icon = this.element.querySelector('#result-icon');
-    const title = this.element.querySelector('#result-title');
-    const subtitle = this.element.querySelector('#result-subtitle');
-    const details = this.element.querySelector('#result-details');
-    const btn = this.element.querySelector('#result-continue');
-
-    if (result.correct) {
-      icon.textContent = '✅';
-      title.textContent = 'Правильно!';
-      subtitle.innerHTML = `Коктейль <strong>${cocktail.name}</strong> приготовлен верно`;
-      details.innerHTML = '<div class="result-good">+1 к прогрессу уровня</div>';
+    const icon = this.element.querySelector('#result-notif-icon');
+    const text = this.element.querySelector('#result-notif-text');
+    if (correct) {
+      icon.textContent = '';
+      text.textContent = 'Верно! +1 к прогрессу';
+      this.element.className = 'result-notification result-correct';
     } else {
-      icon.textContent = '❌';
-      title.textContent = 'Неправильно!';
-      subtitle.innerHTML = `Ошибки в коктейле <strong>${cocktail.name}</strong>:`;
-      details.innerHTML = result.details.map(d => {
-        const ing = INGREDIENTS[d.id];
-        const name = ing ? ing.name : d.id;
-        return `<div class="result-detail-row">
-          <span class="result-detail-name">${name}</span>
-          <span class="result-detail-wrong">${d.actual.toFixed(1)}%</span>
-          <span class="result-detail-arrow">→</span>
-          <span class="result-detail-expected">${d.expected}%</span>
-          <span class="result-detail-diff ${d.diff > 5 ? 'result-diff-bad' : 'result-diff-good'}">${d.diff > 0 ? '+' : ''}${d.diff.toFixed(1)}%</span>
-        </div>`;
-      }).join('');
-      details.innerHTML += '<div class="result-bad">-1 к прогрессу уровня</div>';
+      icon.textContent = '';
+      text.textContent = 'Ошибка! -1 к прогрессу';
+      this.element.className = 'result-notification result-wrong';
     }
+    this.element.classList.remove('hidden');
 
     return new Promise(resolve => {
+      let resolved = false;
       const done = () => {
+        if (resolved) return;
+        resolved = true;
         document.removeEventListener('keydown', onKey);
         this.hide();
         resolve();
@@ -62,7 +41,7 @@ export class ResultPanel {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); done(); }
       };
       document.addEventListener('keydown', onKey);
-      btn.onclick = done;
+      setTimeout(done, 2000);
     });
   }
 
