@@ -416,10 +416,10 @@ export class SceneManager {
       });
     };
 
-    loadPainting('painting_by_zdzislaw_beksinski_3.glb', W - 0.04, -1.0, -Math.PI / 2);
-    loadPainting('painting_of_a_walrus_on_a_unicycle.glb', 3.0, -3.46, 0);
-    loadPainting('psx_painting.glb', -3.0, -3.46, 0);
-    loadPainting('4e02db196539451f8c1322b78e704c87.glb', -W + 0.04, -1.0, Math.PI / 2);
+    loadPainting('assets/painting_by_zdzislaw_beksinski_3.glb', W - 0.04, -1.0, -Math.PI / 2);
+    loadPainting('assets/painting_of_a_walrus_on_a_unicycle.glb', 3.0, -3.46, 0);
+    loadPainting('assets/psx_painting.glb', -3.0, -3.46, 0);
+    loadPainting('assets/4e02db196539451f8c1322b78e704c87.glb', -W + 0.04, -1.0, Math.PI / 2);
 
     const tvBodyMat = new THREE.MeshStandardMaterial({
       color: 0x111111, roughness: 0.3, metalness: 0.3,
