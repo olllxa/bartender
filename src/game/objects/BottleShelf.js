@@ -73,6 +73,7 @@ export class BottleShelf {
         cranberry_juice: { file: 'simply_cranberry.glb', scale: 0.28, rotateY: Math.PI, noEmissive: true },
         lemon_juice: { file: 'lemon.glb', scale: 0.19, rotateY: Math.PI / 2 },
         lime_juice: { file: 'lime_game_ready__2k_pbr.glb', scale: 0.14, rotateY: Math.PI / 2, posOffsetX: -0.15 },
+        campari: { file: 'yongjun.glb', scale: 0.56, rotateY: 0, posOffsetX: 0 },
       };
 
       if (glbBottles[id]) {
