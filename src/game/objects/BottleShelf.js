@@ -68,12 +68,18 @@ export class BottleShelf {
         triple_sec: { file: 'maraschino_liqueur.glb', scale: 0.56, rotateY: Math.PI },
         dry_vermouth: { file: 'shiraz_wine.glb', scale: 0.56 },
         sweet_vermouth: { file: 'wine_bottle.glb', scale: 0.56 },
+        pineapple_juice: { file: 'pineapple.glb', scale: 0.56 },
+        tomato_juice: { file: 'tomato.glb', scale: 0.19 },
+        cranberry_juice: { file: 'simply_cranberry.glb', scale: 0.28, rotateY: Math.PI, noEmissive: true },
+        lemon_juice: { file: 'lemon.glb', scale: 0.19, rotateY: Math.PI / 2 },
+        lime_juice: { file: 'lime_game_ready__2k_pbr.glb', scale: 0.14, rotateY: Math.PI / 2, posOffsetX: -0.15 },
       };
 
       if (glbBottles[id]) {
         const cfg = glbBottles[id];
         const group = new THREE.Group();
         group.position.copy(pos);
+        if (cfg.posOffsetX) group.position.x += cfg.posOffsetX;
         this.group.add(group);
 
         const loader = new GLTFLoader();
@@ -86,13 +92,15 @@ export class BottleShelf {
           if (cfg.rotateY) model.rotation.y = cfg.rotateY;
           box = new THREE.Box3().setFromObject(model);
           model.position.y = -box.min.y;
-          model.traverse((child) => {
-            if (child.isMesh && child.material.map) {
-              child.material.emissive = new THREE.Color(0xffffff);
-              child.material.emissiveIntensity = 0.3;
-              child.material.emissiveMap = child.material.map;
-            }
-          });
+          if (!cfg.noEmissive) {
+            model.traverse((child) => {
+              if (child.isMesh && child.material.map) {
+                child.material.emissive = new THREE.Color(0xffffff);
+                child.material.emissiveIntensity = 0.3;
+                child.material.emissiveMap = child.material.map;
+              }
+            });
+          }
           group.add(model);
         });
 
