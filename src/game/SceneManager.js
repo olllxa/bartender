@@ -226,7 +226,7 @@ export class SceneManager {
     });
 
     const loader = new GLTFLoader();
-    loader.load('gothic_window_with_painted_glass.glb', (gltf) => {
+    loader.load('assets/gothic_window_with_painted_glass.glb', (gltf) => {
       const model = gltf.scene;
       model.scale.set(0.27, 0.27, 0.27);
       for (const p of positions) {
